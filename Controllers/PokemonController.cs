@@ -1,225 +1,107 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
+﻿using PokedexWebApp.Models;
+using PokedexWebApp.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using PokedexWebApp.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Newtonsoft.Json;
+using System.Net.Http;
+using System.Security.Claims;
 
 namespace PokedexWebApp.Controllers
 {
-    public class PokemonController : Controller
+    public class ContactController : Controller
     {
-        private readonly string apiBaseUrl = "http://localhost:5087/api/pokemon";
-
-        // GET: Pokemon
-        public async Task<ActionResult> Index()
+        private readonly IPokemonRepository _repo;
+        public ContactController(IPokemonRepository repo)
         {
-            using (var client = new HttpClient())
+            _repo = repo;
+        }
+        public async Task<IActionResult> GetAllPokemon()
+        {
+            string token = HttpContext.Session.GetString("JWToken");
+
+            if (string.IsNullOrEmpty(token))
             {
-                client.BaseAddress = new Uri(apiBaseUrl);
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                HttpResponseMessage response = await client.GetAsync("");
-
-                if (response.IsSuccessStatusCode)
-                {
-                    string data = await response.Content.ReadAsStringAsync();
-                    var pokemonList = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Pokemon>>(data);
-                    return View(pokemonList);
-                }
-                else
-                {
-                    // Handle error
-                    return View("Error");
-                }
+                // Handle the case when the token is not available
+                return RedirectToAction("Login", "Account");
             }
+
+            var pokemons = await _repo.GetAllPokemon(token);
+
+            return View(pokemons);
         }
 
-        // GET: Pokemon/Details/5
-        public async Task<ActionResult> Details(int id)
+        public async Task<IActionResult> CreateAsync()
         {
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(apiBaseUrl);
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                HttpResponseMessage response = await client.GetAsync($"{id}");
-
-                if (response.IsSuccessStatusCode)
-                {
-                    string data = await response.Content.ReadAsStringAsync();
-                    var pokemon = Newtonsoft.Json.JsonConvert.DeserializeObject<Pokemon>(data);
-                    return View(pokemon);
-                }
-                else
-                {
-                    // Handle error
-                    return View("Error");
-                }
-            }
-        }
-
-        // GET: Pokemon/Create
-        public ActionResult Create()
-        {
             return View();
         }
 
-        // POST: Pokemon/Create
         [HttpPost]
-        public async Task<ActionResult> Create(Pokemon pokemon)
+        public async Task<IActionResult> Create(Pokemon newPokemon)
+        {
+            var token = HttpContext.Session.GetString("JWToken");
+
+            await _repo.AddPokemon(newPokemon, token);
+            return RedirectToAction("GetAllPokemon");
+        }
+
+        public async Task<IActionResult> Edit(int id)
+        {
+            var token = HttpContext.Session.GetString("JWToken");
+            var pokemon = await _repo.GetPokemonById(id, token);
+
+            if (pokemon is null)
+                return NotFound();
+
+            return View(pokemon);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(Pokemon updatedPokemon)
         {
             try
             {
-                using (var client = new HttpClient())
+                var token = HttpContext.Session.GetString("JWToken");
+                var pokemonId = updatedPokemon.Id;
+                var updatedPokemonResult = await _repo.UpdatePokemon(pokemonId, updatedPokemon, token);
+
+                if (updatedPokemonResult != null)
                 {
-                    client.BaseAddress = new Uri(apiBaseUrl);
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                    HttpResponseMessage response = await client.PostAsJsonAsync("", pokemon);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        return RedirectToAction("Index");
-                    }
-                    else
-                    {
-                        // Handle error
-                        return View("Error");
-                    }
-                }
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: Pokemon/Edit/5
-        public async Task<ActionResult> Edit(int id)
-        {
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(apiBaseUrl);
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                HttpResponseMessage response = await client.GetAsync($"{id}");
-
-                if (response.IsSuccessStatusCode)
-                {
-                    string data = await response.Content.ReadAsStringAsync();
-                    var pokemon = Newtonsoft.Json.JsonConvert.DeserializeObject<Pokemon>(data);
-
-                    if (pokemon != null)
-                    {
-                        return View(pokemon);
-                    }
-                    else
-                    {
-                        // Handle the case where the pokemon object is null
-                        return View("Error");
-                    }
+                    // Handle successful update, if needed
+                    return RedirectToAction("GetAllPokemon");
                 }
                 else
                 {
-                    // Handle error
-                    return View("Error");
+                    // Handle failed update, if needed
+                    ModelState.AddModelError(string.Empty, "Failed to update contact.");
+                    return View(updatedPokemon);
                 }
             }
+            catch (Exception ex)
+            {
+                // Handle the exception and return the View with the appropriate error message
+                ModelState.AddModelError(string.Empty, "Failed to update Pokemon: " + ex.Message);
+                return View(updatedPokemon);
+            }
         }
-
-
-        // POST: Pokemon/Edit/5
-        [HttpPost]
-        public async Task<ActionResult> Edit(int id, Pokemon pokemon)
+        public async Task<IActionResult> Delete(int id)
         {
-            try
-            {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(apiBaseUrl);
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                    HttpResponseMessage response = await client.PutAsJsonAsync($"{id}", pokemon);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        return RedirectToAction("Index");
-                    }
-                    else
-                    {
-                        // Handle error
-                        return View("Error");
-                    }
-                }
-            }
-            catch
-            {
-                return View();
-            }
+            var token = HttpContext.Session.GetString("JWToken");
+            await _repo.DeletePokemon(id, token);
+            return RedirectToAction("GetAllPokemon");
         }
-        // GET: Pokemon/Delete/5
-        public async Task<ActionResult> Delete(int id)
+
+        public async Task<IActionResult> Details(int id)
         {
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(apiBaseUrl);
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            var token = HttpContext.Session.GetString("JWToken");
+            var pokemon = await _repo.GetPokemonById(id, token);
 
-                HttpResponseMessage response = await client.GetAsync($"{id}");
+            if (pokemon is null)
+                return NotFound();
 
-                if (response.IsSuccessStatusCode)
-                {
-                    string data = await response.Content.ReadAsStringAsync();
-                    var pokemon = Newtonsoft.Json.JsonConvert.DeserializeObject<Pokemon>(data);
-                    return View(pokemon);
-                }
-                else
-                {
-                    // Handle error
-                    return View("Error");
-                }
-            }
+            return View(pokemon);
         }
 
-        // POST: Pokemon/Delete/5
-        [HttpPost]
-        public async Task<ActionResult> Delete(int id, FormCollection collection)
-        {
-            try
-            {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(apiBaseUrl);
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                    HttpResponseMessage response = await client.DeleteAsync($"{id}");
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        return RedirectToAction("Index");
-                    }
-                    else
-                    {
-                        // Handle error
-                        return View("Error");
-                    }
-                }
-            }
-            catch
-            {
-                return View();
-            }
-        }
     }
 }
-
-
