@@ -1,4 +1,4 @@
-﻿@model ContactWEB.ViewModels.RegisterUserViewModel
+﻿@model PokedexWebApp.ViewModels.RegisterUserViewModel
 
 <div class="background-overlay"></div>
 <h5 id="RegisterH5">REGISTER ACCOUNT</h5>
@@ -13,11 +13,6 @@
         <div>
             <label>Last Name</label> <span class="text-danger" asp-validation-for="LastName"></span>
             <input placeholder="Enter your last name..." class="form-control" asp-for="LastName" />
-            
-        </div>
-        <div>
-            <label>Contact Number</label> <span class="text-danger" asp-validation-for="ContactNo"></span>
-            <input placeholder="Enter your contact number..." class="form-control" asp-for="ContactNo" />
             
         </div>
         <div>

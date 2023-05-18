@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ContactWEB.ViewModels
+namespace PokedexWebApp.ViewModels
 {
     public class RegisterUserViewModel
     {
@@ -22,9 +22,6 @@ namespace ContactWEB.ViewModels
         [Compare("Password", ErrorMessage = "Password does not match")]
         [DataType(DataType.Password)]
         public string ConfirmPassword { get; set; }
-        [RegularExpression("(09)[0-9]{9}", ErrorMessage = "This is not a valid phone number")]
-        [Required(ErrorMessage = "This field is required")]
-        public string ContactNo { get; set; }
         public RegisterUserViewModel()
         {
             UserName = Email;

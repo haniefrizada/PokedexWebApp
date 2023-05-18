@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ContactWEB.ViewModels
+namespace PokedexWebApp.ViewModels
 {
     public class LoginUserViewModel
     {

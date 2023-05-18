@@ -27,8 +27,8 @@ namespace PokedexWebApp.Repositories
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                var contact = JsonConvert.DeserializeObject<Pokemon>(content);
-                return contact;
+                var pokemon = JsonConvert.DeserializeObject<Pokemon>(content);
+                return pokemon;
             }
 
             return null;
@@ -43,59 +43,59 @@ namespace PokedexWebApp.Repositories
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception("Failed to delete contact. Error: " + response.StatusCode);
+                throw new Exception("Failed to delete pokemon. Error: " + response.StatusCode);
             }
         }
 
-        public async Task<List<Contact>> GetAllContacts(string token)
+        public async Task<List<Pokemon>> GetAllPokemon(string token)
         {
             _httpClient.DefaultRequestHeaders.Add("ApiKey", _configs.GetValue<string>("ApiKey"));
             _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-            var response = await _httpClient.GetAsync("/Contacts");
+            var response = await _httpClient.GetAsync("/Pokemons");
 
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                var contacts = JsonConvert.DeserializeObject<List<Contact>>(content);
+                var contacts = JsonConvert.DeserializeObject<List<Pokemon>>(content);
                 return contacts ?? new();
             }
 
             return new();
         }
 
-        public async Task<Contact> GetContactById(int id, string token)
+        public async Task<Pokemon> GetPokemonById(int id, string token)
         {
             _httpClient.DefaultRequestHeaders.Add("ApiKey", _configs.GetValue<string>("ApiKey"));
             _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
 
-            var response = await _httpClient.GetAsync($"/GetContact/{id}");
+            var response = await _httpClient.GetAsync($"/GetPokemon/{id}");
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                var contact = JsonConvert.DeserializeObject<Contact>(content);
+                var contact = JsonConvert.DeserializeObject<Pokemon>(content);
                 return contact;
             }
 
             return null;
         }
 
-        public async Task<Contact> UpdateContact(int id, Contact newContact, string token)
+        public async Task<Pokemon> UpdatePokemon(int id, Pokemon newPokemon, string token)
         {
             _httpClient.DefaultRequestHeaders.Add("ApiKey", _configs.GetValue<string>("ApiKey"));
             _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-            var newContactAsString = JsonConvert.SerializeObject(newContact);
+            var newContactAsString = JsonConvert.SerializeObject(newPokemon);
             var responseBody = new StringContent(newContactAsString, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PutAsync($"/UpdateContact/{id}", responseBody);
+            var response = await _httpClient.PutAsync($"/UpdatePokemon/{id}", responseBody);
 
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                var contact = JsonConvert.DeserializeObject<Contact>(content);
+                var contact = JsonConvert.DeserializeObject<Pokemon>(content);
                 return contact;
             }
             else
             {
-                throw new Exception("Failed to update contact. Error: " + response.StatusCode);
+                throw new Exception("Failed to update Pokemon Details. Error: " + response.StatusCode);
             }
         }
 

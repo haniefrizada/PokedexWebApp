@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Identity;
-using TodoMinimalWebApp.ViewModels;
-using TodoMinimalWebApp.Models;
+﻿
 using Newtonsoft.Json;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using PokedexWebApp.ViewModels;
 
-namespace TodoMinimalWebApp.Data.Repositories
+namespace PokedexWebApp.Repositories
 {
     public class AccountRepository : IAccountRepository
     {

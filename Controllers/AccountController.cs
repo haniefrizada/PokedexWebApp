@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using PokedexWebApp.Repositories;
+using PokedexWebApp.ViewModels;
 
-using ContactWEB.ViewModels;
-using ContactWEB.Repository;
-using System.Linq;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-
-namespace ContactWEB.Controllers
+namespace PokedexWebApp.Controllers
 {
     public class AccountController : Controller
     {

@@ -1,6 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
-using TodoMinimalWebApp.ViewModels;
-using TodoMinimalWebApp.Models;
+﻿
+using PokedexWebApp.ViewModels;
 
 namespace PokedexWebApp.Repositories
 {
