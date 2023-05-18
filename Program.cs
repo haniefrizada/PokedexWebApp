@@ -1,7 +1,12 @@
+using PokedexWebApp.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+builder.Services.AddScoped<IPokemonRepository, PokemonRepository>();
 
 var app = builder.Build();
 
