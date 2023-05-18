@@ -1,0 +1,48 @@
+﻿@model List<Pokemon>
+
+<h2>Pokemon List</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+
+<table class="table">
+    <tr>
+        <th>
+            Pokemon No
+        </th>
+        <th>
+            Name
+        </th>
+        <th>
+            Type
+        </th>
+        <th>
+            Descriptions
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var pokemon in Model)
+    {
+        <tr>
+            <td>
+                @pokemon.PokemonNo
+            </td>
+            <td>
+                @pokemon.Name
+            </td>
+            <td>
+                @pokemon.Type
+            </td>
+            <td>
+                @pokemon.Description
+            </td>
+            <td>
+                @Html.ActionLink("Details", "Details", new { id = pokemon.Id }) |
+                @Html.ActionLink("Edit", "Edit", new { id = pokemon.Id }) |
+                @Html.ActionLink("Delete", "Delete", new { id = pokemon.Id })
+            </td>
+        </tr>
+    }
+</table>
