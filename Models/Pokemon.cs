@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Newtonsoft.Json;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace PokedexWebApp.Models
 {
@@ -6,23 +8,22 @@ namespace PokedexWebApp.Models
     {
         public int Id { get; set; }
 
+        [Required(ErrorMessage = "This field is required")]
         [StringLength(6, MinimumLength = 4)]
+        [JsonProperty("PokemonNo")]
         public string PokemonNo { get; set; }
+
+        [Required(ErrorMessage = "This field is required")]
+        [DisplayName("Pokemon Name")]
+        [JsonProperty("Name")]
         public string Name { get; set; }
+
+        [Required(ErrorMessage = "This field is required")]
+        [JsonProperty("Type")]
         public string Type { get; set; }
+
+        [Required(ErrorMessage = "This field is required")]
+        [JsonProperty("Description")]
         public string Description { get; set; }
-
-        public Pokemon()
-        {
-        }
-
-        public Pokemon(int id, string pokemonNo, string name, string type, string description)
-        {
-            Id = id;
-            PokemonNo = pokemonNo;
-            Name = name;
-            Type = type;
-            Description = description;
-        }
     }
 }

@@ -1,48 +1,83 @@
-﻿@model List<Pokemon>
+﻿@model IEnumerable<PokedexWebApp.Models.Pokemon>
 
-<h2>Pokemon List</h2>
+@{
+    ViewData["Title"] = "GetAllPokemon";
+}
+<div class="background-overlay"></div>
+<div class="container" id="GetAllContactsContainer">
+    <div class="container d-flex justify-content-between p-0">
+        <h4 id="GetAllContactsH4">Pokemon</h4>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
+        <p>
+            <a class="btn btn-outline-dark" asp-action="Create">Add New Pokemon</a>
+        </p>
+    </div>
+    <table class="table table-sm table-striped table-hover table-dark">
+        <thead class="thead-dark" id="thead">
+            <tr>
+                <th scope="col">
+                    Pokemon No
+                </th>
+                <th scope="col">
+                    Pokemon Name
+                </th>
+                <th scope="col">
+                    Type
+                </th>
+                <th scope="col">
+                    Description
+                </th>
+                <th scope="col">ACTION</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td scope="row">
+                        @Html.DisplayFor(modelItem => item.PokemonNo)
+                    </td>
+                    <td scope="row">
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td scope="row">
+                        @Html.DisplayFor(modelItem => item.Type)
+                    </td>
+                    <td scope="row">
+                        @Html.DisplayFor(modelItem => item.Description)
+                    </td>
+                    <td scope="row">
+                        <div class="btn-group" id="btnGroup">
+                            <a class="btn btn-primary btn-sm" asp-action="Edit" asp-route-id="@item.Id">Edit<i class="bi bi-pencil-square"></i></a>
+                            <a class="btn btn-success btn-sm" asp-action="Details" asp-route-id="@item.Id">Details<i class="bi bi-file-person"></i></a>
+                            <div>
+                                <button type="button" class="btn btn-danger btn-sm" title="Delete Pokemon" data-bs-toggle="modal" data-bs-target="#deletePokemon-@item.Id" asp-route-id="@item.Id">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                                <div class="modal fade" id="deletePokemon-@item.Id" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div style="color:black" class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" style="font-weight:bold;">Delete Confirmation</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
 
-<table class="table">
-    <tr>
-        <th>
-            Pokemon No
-        </th>
-        <th>
-            Name
-        </th>
-        <th>
-            Type
-        </th>
-        <th>
-            Descriptions
-        </th>
-        <th></th>
-    </tr>
+                                            <div class="modal-body">
+                                                <p style="color:black">Are you sure you want to remove this Pokemon?</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <a class="btn btn-danger" role="button" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 
-    @foreach (var pokemon in Model)
-    {
-        <tr>
-            <td>
-                @pokemon.PokemonNo
-            </td>
-            <td>
-                @pokemon.Name
-            </td>
-            <td>
-                @pokemon.Type
-            </td>
-            <td>
-                @pokemon.Description
-            </td>
-            <td>
-                @Html.ActionLink("Details", "Details", new { id = pokemon.Id }) |
-                @Html.ActionLink("Edit", "Edit", new { id = pokemon.Id }) |
-                @Html.ActionLink("Delete", "Delete", new { id = pokemon.Id })
-            </td>
-        </tr>
-    }
-</table>
+</div>

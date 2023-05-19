@@ -13,16 +13,18 @@ namespace PokedexWebApp.Repositories
 
         public AccountRepository(IConfiguration configs)
         {
-            _httpClient = new HttpClient();
+            var httpClientHandler = new HttpClientHandler();
+            httpClientHandler.ServerCertificateCustomValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
+            _httpClient = new HttpClient(httpClientHandler);
             _configs = configs;
-            _httpClient.BaseAddress = new Uri("http://localhost:5283");
+            _httpClient.BaseAddress = new Uri("http://localhost:5087");
         }
         public async Task<bool> SignUpUserAsync(RegisterUserViewModel user)
         {
             var newTodoAsString = JsonConvert.SerializeObject(user);
             var requestBody = new StringContent(newTodoAsString, Encoding.UTF8, "application/json");
             _httpClient.DefaultRequestHeaders.Add("ApiKey", _configs.GetValue<string>("ApiKey"));
-            var response = await _httpClient.PostAsync("/signup", requestBody);
+            var response = await _httpClient.PostAsync("/Signup", requestBody);
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
@@ -38,7 +40,7 @@ namespace PokedexWebApp.Repositories
             var newTodoAsString = JsonConvert.SerializeObject(loginUserViewModel);
             var requestBody = new StringContent(newTodoAsString, Encoding.UTF8, "application/json");
             _httpClient.DefaultRequestHeaders.Add("ApiKey", _configs.GetValue<string>("ApiKey"));
-            var response = await _httpClient.PostAsync("/login", requestBody);
+            var response = await _httpClient.PostAsync("/Login", requestBody);
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();

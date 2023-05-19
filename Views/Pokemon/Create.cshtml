@@ -1,54 +1,40 @@
-﻿@model Pokemon
+﻿@model PokedexWebApp.Models.Pokemon
 
-<h2>Create Pokemon</h2>
-
-@using (Html.BeginForm())
-{
-    @Html.AntiForgeryToken()
-
-    <div class="form-horizontal">
-        <h4>Pokemon</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <div class="form-group">
-            @Html.LabelFor(model => model.PokemonNo, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.PokemonNo, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.PokemonNo, "", new { @class = "text-danger" })
-            </div>
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
-            </div>
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(model => model.Type, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Type, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger" })
-            </div>
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
-            </div>
-        </div>
-        <br>
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
-            </div>
-        </div>
-    </div>
+@{
+    ViewData["Title"] = "Create";
 }
+<div class="background-overlay"></div>
+<h5 id="CreateH5">Add Pokemon</h5>
 
-<div>
-    @Html.ActionLink("Back to List", "Index")
+<hr />
+<div class="container" id="CreateContainer">
+    <div>
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label class="control-label">Pokemon No</label> <span asp-validation-for="PokemonNo" class="text-danger"></span>
+                <input placeholder="#0000" asp-for="PokemonNo" class="form-control" />
+
+            </div>
+            <div class="form-group">
+                <label class="control-label"></label> <span asp-validation-for="Name" class="text-danger"></span>
+                <input placeholder="Enter Pokemon Name..." asp-for="Name" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">Type</label> <span asp-validation-for="Type" class="text-danger"></span>
+                <input placeholder="Enter Pokemon Type(s)..." asp-for="Type" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">Description</label> <span asp-validation-for="Description" class="text-danger"></span>
+                <input placeholder="Enter Pokemon Description..." asp-for="Description" class="form-control" />
+            </div>
+            
+            <div class="form-group">
+                <input style="width: 100%; margin-top: 5px;" class="btn btn-dark" type="submit" value="CREATE" />
+            </div>
+            <div>
+                <a style="width: 100%; margin-top: 5px;" class="btn btn-danger" asp-action="GetAllPokemon">CANCEL</a>
+            </div>
+        </form>
+    </div>
 </div>
-
-       

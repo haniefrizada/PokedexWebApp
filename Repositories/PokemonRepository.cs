@@ -1,5 +1,6 @@
-using PokedexWebApp.Models;
 using Newtonsoft.Json;
+using PokedexWebApp.Models;
+using PokedexWebApp.ViewModel;
 using System.Text;
 
 namespace PokedexWebApp.Repositories
@@ -8,14 +9,16 @@ namespace PokedexWebApp.Repositories
     {
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configs;
+
         public PokemonRepository(IConfiguration configs)
         {
             var httpClientHandler = new HttpClientHandler();
             httpClientHandler.ServerCertificateCustomValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
             _httpClient = new HttpClient(httpClientHandler);
             _configs = configs;
-            _httpClient.BaseAddress = new Uri("https://localhost:5087");
+            _httpClient.BaseAddress = new Uri("http://localhost:5087/api/pokemon");
         }
+
         public async Task<Pokemon> AddPokemon(Pokemon newPokemon, string token)
         {
             _httpClient.DefaultRequestHeaders.Add("ApiKey", _configs.GetValue<string>("ApiKey"));
@@ -23,7 +26,50 @@ namespace PokedexWebApp.Repositories
             var newTodoAsString = JsonConvert.SerializeObject(newPokemon);
             var requestBody = new StringContent(newTodoAsString, Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync("/AddPokemon", requestBody);
+            var response = await _httpClient.PostAsync("", requestBody);
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var contact = JsonConvert.DeserializeObject<Pokemon>(content);
+                return contact;
+            }
+
+            return null;
+        }
+
+        public async Task DeletePokemon(int pokemonId, string token)
+        {
+            _httpClient.DefaultRequestHeaders.Add("ApiKey", _configs.GetValue<string>("ApiKey"));
+            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+            var response = await _httpClient.DeleteAsync($"/api/pokemon/{pokemonId}");
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("Failed to delete contact. Error: " + response.StatusCode);
+            }
+        }
+
+        public async Task<List<Pokemon>> GetAllPokemon(string token)
+        {
+            _httpClient.DefaultRequestHeaders.Add("ApiKey", _configs.GetValue<string>("ApiKey"));
+            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+            var response = await _httpClient.GetAsync("");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var pokemonList = JsonConvert.DeserializeObject<List<Pokemon>>(content);
+                return pokemonList ?? new List<Pokemon>();
+            }
+
+            return new List<Pokemon>();
+        }
+
+        public async Task<Pokemon> GetPokemonById(int id, string token)
+        {
+            _httpClient.DefaultRequestHeaders.Add("ApiKey", _configs.GetValue<string>("ApiKey"));
+            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+            var response = await _httpClient.GetAsync($"/api/pokemon/{id}");
+
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
@@ -34,70 +80,19 @@ namespace PokedexWebApp.Repositories
             return null;
         }
 
-        public async Task DeletePokemon(int id, string token)
+        public async Task<Pokemon> UpdatePokemon(int pokemonId, Pokemon updatedPokemon, string token)
         {
             _httpClient.DefaultRequestHeaders.Add("ApiKey", _configs.GetValue<string>("ApiKey"));
             _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+            var pokemonJson = JsonConvert.SerializeObject(updatedPokemon);
+            var pokemonContent = new StringContent(pokemonJson, Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.DeleteAsync($"/DeletePokemon/{id}");
+            var response = await _httpClient.PutAsync($"/api/pokemon/{pokemonId}", pokemonContent);
+            response.EnsureSuccessStatusCode();
 
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new Exception("Failed to delete pokemon. Error: " + response.StatusCode);
-            }
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var modifiedPokemon = JsonConvert.DeserializeObject<Pokemon>(responseContent);
+            return modifiedPokemon;
         }
-
-        public async Task<List<Pokemon>> GetAllPokemon(string token)
-        {
-            _httpClient.DefaultRequestHeaders.Add("ApiKey", _configs.GetValue<string>("ApiKey"));
-            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-            var response = await _httpClient.GetAsync("/Pokemons");
-
-            if (response.IsSuccessStatusCode)
-            {
-                var content = await response.Content.ReadAsStringAsync();
-                var contacts = JsonConvert.DeserializeObject<List<Pokemon>>(content);
-                return contacts ?? new();
-            }
-
-            return new();
-        }
-
-        public async Task<Pokemon> GetPokemonById(int id, string token)
-        {
-            _httpClient.DefaultRequestHeaders.Add("ApiKey", _configs.GetValue<string>("ApiKey"));
-            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-
-            var response = await _httpClient.GetAsync($"/GetPokemon/{id}");
-            if (response.IsSuccessStatusCode)
-            {
-                var content = await response.Content.ReadAsStringAsync();
-                var contact = JsonConvert.DeserializeObject<Pokemon>(content);
-                return contact;
-            }
-
-            return null;
-        }
-
-        public async Task<Pokemon> UpdatePokemon(int id, Pokemon newPokemon, string token)
-        {
-            _httpClient.DefaultRequestHeaders.Add("ApiKey", _configs.GetValue<string>("ApiKey"));
-            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-            var newContactAsString = JsonConvert.SerializeObject(newPokemon);
-            var responseBody = new StringContent(newContactAsString, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PutAsync($"/UpdatePokemon/{id}", responseBody);
-
-            if (response.IsSuccessStatusCode)
-            {
-                var content = await response.Content.ReadAsStringAsync();
-                var contact = JsonConvert.DeserializeObject<Pokemon>(content);
-                return contact;
-            }
-            else
-            {
-                throw new Exception("Failed to update Pokemon Details. Error: " + response.StatusCode);
-            }
-        }
-
     }
 }

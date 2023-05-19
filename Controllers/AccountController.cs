@@ -54,7 +54,7 @@ namespace PokedexWebApp.Controllers
                     // add token to session 
                     HttpContext.Session.SetString("JWToken", result);
                    
-                    return RedirectToAction("GetAllContacts", "Contact");
+                    return RedirectToAction("GetAllPokemon", "Pokemon");
                 }
                 ModelState.AddModelError(string.Empty, "Invalid Login Credentials");
             }

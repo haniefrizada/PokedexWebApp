@@ -1,38 +1,39 @@
-﻿using PokedexWebApp.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using PokedexWebApp.Models;
 using PokedexWebApp.Repositories;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Newtonsoft.Json;
-using System.Net.Http;
-using System.Security.Claims;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace PokedexWebApp.Controllers
 {
-    public class ContactController : Controller
+    public class PokemonController : Controller
     {
-        private readonly IPokemonRepository _repo;
-        public ContactController(IPokemonRepository repo)
+        private readonly IPokemonRepository _pokemonRepository;
+
+        public PokemonController(IPokemonRepository pokemonRepository)
         {
-            _repo = repo;
+            _pokemonRepository = pokemonRepository;
         }
+
         public async Task<IActionResult> GetAllPokemon()
         {
             string token = HttpContext.Session.GetString("JWToken");
-
-            if (string.IsNullOrEmpty(token))
-            {
-                // Handle the case when the token is not available
-                return RedirectToAction("Login", "Account");
-            }
-
-            var pokemons = await _repo.GetAllPokemon(token);
-
-            return View(pokemons);
+            var pokemonList = await _pokemonRepository.GetAllPokemon(token);
+            return View(pokemonList);
         }
 
-        public async Task<IActionResult> CreateAsync()
+        public async Task<IActionResult> Details(int id)
         {
+            var token = HttpContext.Session.GetString("JWToken");
+            var pokemon = await _pokemonRepository.GetPokemonById(id, token);
+            if (pokemon == null)
+                return NotFound();
 
+            return View(pokemon);
+        }
+
+        public IActionResult Create()
+        {
             return View();
         }
 
@@ -41,65 +42,41 @@ namespace PokedexWebApp.Controllers
         {
             var token = HttpContext.Session.GetString("JWToken");
 
-            await _repo.AddPokemon(newPokemon, token);
+            await _pokemonRepository.AddPokemon(newPokemon, token);
             return RedirectToAction("GetAllPokemon");
         }
 
         public async Task<IActionResult> Edit(int id)
         {
             var token = HttpContext.Session.GetString("JWToken");
-            var pokemon = await _repo.GetPokemonById(id, token);
-
-            if (pokemon is null)
+            var pokemon = await _pokemonRepository.GetPokemonById(id, token);
+            if (pokemon == null)
                 return NotFound();
 
             return View(pokemon);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(Pokemon updatedPokemon)
+        public async Task<IActionResult> Edit(int id, Pokemon updatedPokemon)
         {
-            try
-            {
-                var token = HttpContext.Session.GetString("JWToken");
-                var pokemonId = updatedPokemon.Id;
-                var updatedPokemonResult = await _repo.UpdatePokemon(pokemonId, updatedPokemon, token);
+            var token = HttpContext.Session.GetString("JWToken");
+            if (id != updatedPokemon.Id)
+                return NotFound();
 
-                if (updatedPokemonResult != null)
-                {
-                    // Handle successful update, if needed
-                    return RedirectToAction("GetAllPokemon");
-                }
-                else
-                {
-                    // Handle failed update, if needed
-                    ModelState.AddModelError(string.Empty, "Failed to update contact.");
-                    return View(updatedPokemon);
-                }
-            }
-            catch (Exception ex)
+            if (ModelState.IsValid)
             {
-                // Handle the exception and return the View with the appropriate error message
-                ModelState.AddModelError(string.Empty, "Failed to update Pokemon: " + ex.Message);
-                return View(updatedPokemon);
+                var modifiedPokemon = await _pokemonRepository.UpdatePokemon(id, updatedPokemon, token);
+                return RedirectToAction(nameof(GetAllPokemon), new { id = modifiedPokemon.Id, token });
             }
+
+            return View(updatedPokemon);
         }
+
         public async Task<IActionResult> Delete(int id)
         {
             var token = HttpContext.Session.GetString("JWToken");
-            await _repo.DeletePokemon(id, token);
+            await _pokemonRepository.DeletePokemon(id, token);
             return RedirectToAction("GetAllPokemon");
-        }
-
-        public async Task<IActionResult> Details(int id)
-        {
-            var token = HttpContext.Session.GetString("JWToken");
-            var pokemon = await _repo.GetPokemonById(id, token);
-
-            if (pokemon is null)
-                return NotFound();
-
-            return View(pokemon);
         }
 
 
