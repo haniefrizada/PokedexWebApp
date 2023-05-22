@@ -15,16 +15,38 @@ namespace PokedexWebApp.Controllers
             _pokemonRepository = pokemonRepository;
         }
 
-        public async Task<IActionResult> GetAllPokemon()
+        public async Task<IActionResult> GetAllPokemon(string searchString)
         {
             string token = HttpContext.Session.GetString("JWToken");
+            if (string.IsNullOrEmpty(token))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             var pokemonList = await _pokemonRepository.GetAllPokemon(token);
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                searchString = searchString.ToLower(); // Convert the search string to lowercase
+
+                pokemonList = pokemonList.Where(p =>
+                    p.Name.ToLower().Contains(searchString) ||
+                    p.Type.ToLower().Contains(searchString) ||
+                    p.PokemonNo.ToString().Contains(searchString)
+                ).ToList();
+            }
+
             return View(pokemonList);
         }
 
         public async Task<IActionResult> Details(int id)
         {
             var token = HttpContext.Session.GetString("JWToken");
+            if (string.IsNullOrEmpty(token))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+                
             var pokemon = await _pokemonRepository.GetPokemonById(id, token);
             if (pokemon == null)
                 return NotFound();
@@ -42,9 +64,20 @@ namespace PokedexWebApp.Controllers
         {
             var token = HttpContext.Session.GetString("JWToken");
 
-            await _pokemonRepository.AddPokemon(newPokemon, token);
+            try
+            {
+                await _pokemonRepository.AddPokemon(newPokemon, token);
+
+                TempData["SuccessNotification"] = "New Pokemon added successfully!";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorNotification"] = "Failed to add new Pokemon. Error: " + ex.Message;
+            }
+
             return RedirectToAction("GetAllPokemon");
         }
+
 
         public async Task<IActionResult> Edit(int id)
         {
@@ -66,6 +99,7 @@ namespace PokedexWebApp.Controllers
             if (ModelState.IsValid)
             {
                 var modifiedPokemon = await _pokemonRepository.UpdatePokemon(id, updatedPokemon, token);
+                TempData["SuccessNotification"] = "Pokemon details updated successfully!";
                 return RedirectToAction(nameof(GetAllPokemon), new { id = modifiedPokemon.Id, token });
             }
 
@@ -76,8 +110,10 @@ namespace PokedexWebApp.Controllers
         {
             var token = HttpContext.Session.GetString("JWToken");
             await _pokemonRepository.DeletePokemon(id, token);
-            return RedirectToAction("GetAllPokemon");
+            TempData["SuccessNotification"] = "Pokemon deleted successfully!";
+            return RedirectToAction(nameof(GetAllPokemon));
         }
+
 
 
     }

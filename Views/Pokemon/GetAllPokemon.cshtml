@@ -1,32 +1,44 @@
 ﻿@model IEnumerable<PokedexWebApp.Models.Pokemon>
-
 @{
     ViewData["Title"] = "GetAllPokemon";
 }
-<div class="background-overlay"></div>
-<div class="container" id="GetAllContactsContainer">
+
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.7.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+
+<div class="container" id="GetAllPokemonContainer">
     <div class="container d-flex justify-content-between p-0">
         <h4 id="GetAllContactsH4">Pokemon</h4>
-
         <p>
             <a class="btn btn-outline-dark" asp-action="Create">Add New Pokemon</a>
         </p>
     </div>
-    <table class="table table-sm table-striped table-hover table-dark">
-        <thead class="thead-dark" id="thead">
+
+    <div class="row mb-3">
+        <div class="col-lg-6">
+            <form method="get" action="" class="form-inline">
+                <div class="input-group">
+                    <input type="text" name="searchString" class="form-control" placeholder="Pokemon" value="@ViewBag.CurrentFilter" />
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-primary">
+                            Search
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <table class="table table-striped table-hover">
+        <thead class="thead-dark">
             <tr>
-                <th scope="col">
-                    Pokemon No
-                </th>
-                <th scope="col">
-                    Pokemon Name
-                </th>
-                <th scope="col">
-                    Type
-                </th>
-                <th scope="col">
-                    Description
-                </th>
+                <th scope="col">Pokemon No</th>
+                <th scope="col">Pokemon Name</th>
+                <th scope="col">Pokemon Type</th>
                 <th scope="col">ACTION</th>
             </tr>
         </thead>
@@ -34,50 +46,18 @@
             @foreach (var item in Model)
             {
                 <tr>
-                    <td scope="row">
-                        @Html.DisplayFor(modelItem => item.PokemonNo)
-                    </td>
-                    <td scope="row">
-                        @Html.DisplayFor(modelItem => item.Name)
-                    </td>
-                    <td scope="row">
-                        @Html.DisplayFor(modelItem => item.Type)
-                    </td>
-                    <td scope="row">
-                        @Html.DisplayFor(modelItem => item.Description)
-                    </td>
-                    <td scope="row">
-                        <div class="btn-group" id="btnGroup">
-                            <a class="btn btn-primary btn-sm" asp-action="Edit" asp-route-id="@item.Id">Edit<i class="bi bi-pencil-square"></i></a>
-                            <a class="btn btn-success btn-sm" asp-action="Details" asp-route-id="@item.Id">Details<i class="bi bi-file-person"></i></a>
-                            <div>
-                                <button type="button" class="btn btn-danger btn-sm" title="Delete Pokemon" data-bs-toggle="modal" data-bs-target="#deletePokemon-@item.Id" asp-route-id="@item.Id">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                                <div class="modal fade" id="deletePokemon-@item.Id" tabindex="-1">
-                                    <div class="modal-dialog">
-                                        <div style="color:black" class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" style="font-weight:bold;">Delete Confirmation</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-
-                                            <div class="modal-body">
-                                                <p style="color:black">Are you sure you want to remove this Pokemon?</p>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                <a class="btn btn-danger" role="button" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                    <td>@Html.DisplayFor(modelItem => item.PokemonNo)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Type)</td>
+                    <td>
+                        <div class="btn-group">
+                            <a class="btn btn-primary btn-sm" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                            <a class="btn btn-success btn-sm" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                            <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                         </div>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
-
 </div>

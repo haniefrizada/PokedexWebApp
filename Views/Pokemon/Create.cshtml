@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Create";
 }
+
 <div class="background-overlay"></div>
 <h5 id="CreateH5">Add Pokemon</h5>
 
@@ -10,25 +11,29 @@
 <div class="container" id="CreateContainer">
     <div>
         <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @*<div asp-validation-summary="ModelOnly" class="text-danger"></div>*@
+            <input type="hidden" asp-for="Id" />
             <div class="form-group">
-                <label class="control-label">Pokemon No</label> <span asp-validation-for="PokemonNo" class="text-danger"></span>
+                <label class="control-label">Pokemon Number</label>
+                <span asp-validation-for="PokemonNo" class="text-danger"></span>
                 <input placeholder="#0000" asp-for="PokemonNo" class="form-control" />
-
             </div>
             <div class="form-group">
-                <label class="control-label"></label> <span asp-validation-for="Name" class="text-danger"></span>
+                <label class="control-label">Pokemon Name</label>
+                <span asp-validation-for="Name" class="text-danger"></span>
                 <input placeholder="Enter Pokemon Name..." asp-for="Name" class="form-control" />
             </div>
             <div class="form-group">
-                <label class="control-label">Type</label> <span asp-validation-for="Type" class="text-danger"></span>
+                <label class="control-label">Pokemon Type</label>
+                <span asp-validation-for="Type" class="text-danger"></span>
                 <input placeholder="Enter Pokemon Type(s)..." asp-for="Type" class="form-control" />
             </div>
             <div class="form-group">
-                <label class="control-label">Description</label> <span asp-validation-for="Description" class="text-danger"></span>
+                <label class="control-label">Description</label>
+                <span asp-validation-for="Description" class="text-danger"></span>
                 <input placeholder="Enter Pokemon Description..." asp-for="Description" class="form-control" />
             </div>
-            
+
             <div class="form-group">
                 <input style="width: 100%; margin-top: 5px;" class="btn btn-dark" type="submit" value="CREATE" />
             </div>
@@ -38,3 +43,60 @@
         </form>
     </div>
 </div>
+
+@if (TempData.ContainsKey("SuccessNotification"))
+{
+    <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="successModalLabel">Success Notification</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @TempData["SuccessNotification"]
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $('#successModal').modal('show');
+        });
+    </script>
+}
+
+@if (TempData.ContainsKey("ErrorNotification"))
+{
+    <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="errorModalLabel">Error Notification</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @TempData["ErrorNotification"]
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $('#errorModal').modal('show');
+        });
+    </script>
+}
+

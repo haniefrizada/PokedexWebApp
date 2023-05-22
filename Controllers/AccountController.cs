@@ -53,7 +53,9 @@ namespace PokedexWebApp.Controllers
                 {
                     // add token to session 
                     HttpContext.Session.SetString("JWToken", result);
-                   
+                    // Add success notification to TempData
+                    TempData["SuccessNotification"] = "Login successful.";
+
                     return RedirectToAction("GetAllPokemon", "Pokemon");
                 }
                 ModelState.AddModelError(string.Empty, "Invalid Login Credentials");

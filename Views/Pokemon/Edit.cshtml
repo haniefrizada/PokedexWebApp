@@ -7,6 +7,22 @@
 <h5 id="EditH5">Edit Pokemon</h5>
 <hr />
 <div class="container" id="EditContainer">
+    @if (TempData["SuccessNotification"] != null)
+    {
+        <div class="modal" style="display:block">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Success</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>@TempData["SuccessNotification"]</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
     <div>
         <form asp-action="Edit">
             <input type="hidden" asp-for="Id" />

@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 using PokedexWebApp.Models;
-using PokedexWebApp.ViewModel;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace PokedexWebApp.Repositories
@@ -23,6 +23,18 @@ namespace PokedexWebApp.Repositories
         {
             _httpClient.DefaultRequestHeaders.Add("ApiKey", _configs.GetValue<string>("ApiKey"));
             _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+
+            // Validate the newPokemon object
+            var validationResults = new List<ValidationResult>();
+            var isValid = Validator.TryValidateObject(newPokemon, new ValidationContext(newPokemon), validationResults);
+
+            if (!isValid)
+            {
+                // If the newPokemon object is not valid, throw an exception with the validation errors
+                var errorMessages = validationResults.Select(vr => vr.ErrorMessage);
+                throw new Exception(string.Join(", ", errorMessages));
+            }
+
             var newTodoAsString = JsonConvert.SerializeObject(newPokemon);
             var requestBody = new StringContent(newTodoAsString, Encoding.UTF8, "application/json");
 
@@ -37,6 +49,7 @@ namespace PokedexWebApp.Repositories
             return null;
         }
 
+
         public async Task DeletePokemon(int pokemonId, string token)
         {
             _httpClient.DefaultRequestHeaders.Add("ApiKey", _configs.GetValue<string>("ApiKey"));
@@ -44,7 +57,7 @@ namespace PokedexWebApp.Repositories
             var response = await _httpClient.DeleteAsync($"/api/pokemon/{pokemonId}");
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception("Failed to delete contact. Error: " + response.StatusCode);
+                throw new Exception("Failed to delete pokemon. Error: " + response.StatusCode);
             }
         }
 
