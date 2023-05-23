@@ -7,6 +7,7 @@ namespace PokedexWebApp.Repositories
     {
         Task<List<Pokemon>> GetAllPokemon(string token);
         Task<Pokemon> GetPokemonById(int id, string token);
+        Task<Pokemon> GetPokemonByPokemonNo(string pokemonNo, string token);
         Task<Pokemon> AddPokemon(Pokemon newPokemon, string token);
         Task<Pokemon> UpdatePokemon(int pokemonId, Pokemon newPokemon, string token);
         Task DeletePokemon(int pokemonId, string token);

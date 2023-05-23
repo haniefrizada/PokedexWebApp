@@ -5,42 +5,44 @@
 }
 
 <div class="background-overlay"></div>
-<h5 id="CreateH5">Add Pokemon</h5>
+<h5 class="text-center">Add Pokemon</h5>
 
 <hr />
-<div class="container" id="CreateContainer">
-    <div>
-        <form asp-action="Create">
-            @*<div asp-validation-summary="ModelOnly" class="text-danger"></div>*@
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label class="control-label">Pokemon Number</label>
-                <span asp-validation-for="PokemonNo" class="text-danger"></span>
-                <input placeholder="#0000" asp-for="PokemonNo" class="form-control" />
-            </div>
-            <div class="form-group">
-                <label class="control-label">Pokemon Name</label>
-                <span asp-validation-for="Name" class="text-danger"></span>
-                <input placeholder="Enter Pokemon Name..." asp-for="Name" class="form-control" />
-            </div>
-            <div class="form-group">
-                <label class="control-label">Pokemon Type</label>
-                <span asp-validation-for="Type" class="text-danger"></span>
-                <input placeholder="Enter Pokemon Type(s)..." asp-for="Type" class="form-control" />
-            </div>
-            <div class="form-group">
-                <label class="control-label">Description</label>
-                <span asp-validation-for="Description" class="text-danger"></span>
-                <input placeholder="Enter Pokemon Description..." asp-for="Description" class="form-control" />
-            </div>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <form asp-action="Create">
+                @*<div asp-validation-summary="ModelOnly" class="text-danger"></div>*@
+                <input type="hidden" asp-for="Id" />
+                <div class="form-group">
+                    <label class="control-label">Pokemon Number</label>
+                    <input placeholder="#0000" asp-for="PokemonNo" class="form-control" />
+                    <span asp-validation-for="PokemonNo" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Pokemon Name</label>
+                    <input placeholder="Enter Pokemon Name..." asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Pokemon Type</label>
+                    <input placeholder="Enter Pokemon Type(s)..." asp-for="Type" class="form-control" />
+                    <span asp-validation-for="Type" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Description</label>
+                    <input placeholder="Enter Pokemon Description..." asp-for="Description" class="form-control" />
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
 
-            <div class="form-group">
-                <input style="width: 100%; margin-top: 5px;" class="btn btn-dark" type="submit" value="CREATE" />
-            </div>
-            <div>
-                <a style="width: 100%; margin-top: 5px;" class="btn btn-danger" asp-action="GetAllPokemon">CANCEL</a>
-            </div>
-        </form>
+                <div class="form-group">
+                    <button class="btn btn-primary btn-block" type="submit">CREATE</button>
+                </div>
+                <div class="form-group">
+                    <a class="btn btn-secondary btn-block" asp-action="GetAllPokemon">CANCEL</a>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
@@ -99,4 +101,3 @@
         });
     </script>
 }
-

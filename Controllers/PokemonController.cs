@@ -64,6 +64,13 @@ namespace PokedexWebApp.Controllers
         {
             var token = HttpContext.Session.GetString("JWToken");
 
+            var existingPokemon = await _pokemonRepository.GetPokemonByPokemonNo(newPokemon.PokemonNo, token);
+            if (existingPokemon != null)
+            {
+                TempData["ErrorNotification"] = "Pokemon number already exists.";
+                return RedirectToAction("Create");
+            }
+
             try
             {
                 await _pokemonRepository.AddPokemon(newPokemon, token);

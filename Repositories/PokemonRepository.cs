@@ -93,6 +93,22 @@ namespace PokedexWebApp.Repositories
             return null;
         }
 
+        public async Task<Pokemon> GetPokemonByPokemonNo(string pokemonNo, string token)
+        {
+            _httpClient.DefaultRequestHeaders.Add("ApiKey", _configs.GetValue<string>("ApiKey"));
+            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+            var response = await _httpClient.GetAsync($"/api/pokemon/pokemonNo/{pokemonNo}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var pokemon = JsonConvert.DeserializeObject<Pokemon>(content);
+                return pokemon;
+            }
+
+            return null;
+        }
+
         public async Task<Pokemon> UpdatePokemon(int pokemonId, Pokemon updatedPokemon, string token)
         {
             _httpClient.DefaultRequestHeaders.Add("ApiKey", _configs.GetValue<string>("ApiKey"));

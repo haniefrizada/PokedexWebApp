@@ -18,6 +18,7 @@ namespace PokedexWebApp.Controllers
         {
             return View();
         }
+
         [HttpPost]
         public async Task<IActionResult> Register(RegisterUserViewModel userViewModel)
         {
@@ -28,11 +29,13 @@ namespace PokedexWebApp.Controllers
                 var result = await _repo.SignUpUserAsync(userViewModel);
                 if (result)
                 {
-                    return RedirectToAction("login");
+                    TempData["SuccessNotification"] = "Registration successful. You can now login."; // Add success notification to TempData
+                    return RedirectToAction("Login");
                 }
             }
             return View(userViewModel);
         }
+
 
 
 

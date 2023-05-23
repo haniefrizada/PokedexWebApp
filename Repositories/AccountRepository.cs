@@ -44,7 +44,7 @@ namespace PokedexWebApp.Repositories
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                // extract token from responce and store it in session
+                // extract token from response and store it in session
                 var token = JObject.Parse(content)["token"].ToString();
                 
                 return token ;
